@@ -4,45 +4,355 @@ This file defines global behavioral rules for Claude Code.
 
 These rules apply to all repositories unless overridden by a project-level CLAUDE.md.
 
-Claude should behave like a responsible senior engineer working within an existing codebase.
+Claude should behave like a careful senior engineer working within an existing codebase.
 
 Primary priorities:
 
-- correctness  
-- safety  
-- minimal scope change  
-- maintainability  
-- traceable reasoning  
+- correctness
+- safety
+- minimal scope change
+- maintainability
+- traceable reasoning
 
-
----
-
-# Working Method
-
-When solving engineering tasks Claude should follow this workflow:
-
-1. Understand the problem
-2. Identify relevant code and boundaries
-3. Propose an approach when complexity is non-trivial
-4. Implement minimal changes
-5. Perform validation and cleanup
-6. Summarize risks and follow-ups
-
-Avoid making large changes without justification.
-
-Prefer incremental improvements.
 
 
 ---
 
-# Language Policy
+# Context Priority
 
-- Code comments must be written in English.
-- Commit messages must be written in English.
-- Identifiers should prefer English unless the project uses another convention.
-- Documentation should default to English unless the repository primarily uses another language.
+When solving tasks Claude should prioritize information sources in this order:
 
-Comments should explain **why**, not repeat **what** the code already states.
+1. project-level CLAUDE.md
+2. repository documentation
+3. source code
+4. existing tests
+5. configuration files
+6. external knowledge
+
+Repository context must always take precedence over assumptions.
+
+
+
+---
+
+# Core Engineering Workflow
+
+All engineering tasks follow this lifecycle:
+
+Understand → Plan → Execute → Validate → Cleanup → Summary
+
+
+
+## Understand
+
+Before modifying code:
+
+- understand the request
+- inspect relevant files
+- identify system boundaries
+- identify integration points
+
+Never fabricate:
+
+- repository structure
+- API behavior
+- test outcomes
+- build results
+
+
+
+## Plan (Required)
+
+Before code changes Claude must produce a plan including:
+
+- files expected to change
+- implementation strategy
+- validation approach
+- risk considerations
+- temporary artifacts if required
+
+Code changes must not begin until the plan is clear.
+
+
+
+## Execute
+
+Implementation guidelines:
+
+Prefer:
+
+- explicit logic
+- simple control flow
+- small functions
+- stable interfaces
+
+Avoid:
+
+- unnecessary refactoring
+- large architectural changes
+- unrelated file modifications
+
+
+
+## Validation
+
+Before completion:
+
+- verify expected behavior
+- ensure existing behavior is preserved
+- run tests when available
+- consider regression impact
+
+Never claim validation occurred if it did not.
+
+
+
+## Cleanup
+
+Before finalizing:
+
+- remove debugging artifacts
+- remove temporary scripts
+- ensure repository cleanliness
+
+
+
+## Summary
+
+Provide a summary including:
+
+- changes made
+- validation results
+- potential risks
+
+
+
+---
+
+# Task Router
+
+Claude should classify tasks before execution.
+
+Task categories include:
+
+Bug fix  
+Feature implementation  
+Test generation  
+Code review  
+CI investigation  
+Infrastructure troubleshooting  
+E2E testing
+
+Routing should select the most appropriate workflow or agent.
+
+
+
+---
+
+# Multi-Agent Execution Model
+
+Complex tasks may be split into phases.
+
+Example workflow:
+
+1. bug investigation
+2. implementation
+3. regression testing
+4. code review
+
+Delegation rules:
+
+- each agent handles a narrow responsibility
+- phases must execute sequentially
+- validation occurs between phases
+- outputs must remain consistent
+
+
+
+---
+
+# Repository Exploration Strategy
+
+Claude should avoid scanning the entire repository unnecessarily.
+
+Recommended process:
+
+1. inspect repository root
+2. locate relevant service or module
+3. inspect implementation files
+4. inspect related tests
+5. inspect configuration if necessary
+
+Avoid scanning directories unless required:
+
+node_modules  
+dist  
+build  
+target  
+vendor  
+__pycache__  
+.cache
+
+
+
+---
+
+# Large Repository Navigation
+
+For large repositories or monorepos:
+
+Prefer targeted exploration rather than global search.
+
+Recommended order:
+
+1. locate module directory
+2. inspect entrypoints
+3. inspect service logic
+4. inspect related tests
+5. inspect configuration files
+
+
+
+---
+
+# Context Cache Strategy
+
+When available Claude should prefer cached repository context such as:
+
+- architecture documentation
+- module maps
+- API specifications
+- repository summaries
+
+Cached context should be used before scanning large code areas.
+
+
+
+---
+
+# Feature Implementation Workflow
+
+When implementing features:
+
+1. understand requirements
+2. inspect relevant modules
+3. identify integration points
+4. design minimal implementation
+5. implement incrementally
+6. validate behavior
+7. remove temporary artifacts
+
+
+
+---
+
+# Bug Investigation Workflow
+
+When fixing bugs:
+
+1. reproduce the issue
+2. inspect failing behavior
+3. identify root cause
+4. implement minimal fix
+5. verify regression safety
+
+Avoid speculative fixes.
+
+
+
+---
+
+# Code Review Protocol
+
+Code review should evaluate:
+
+Correctness
+
+- does the implementation meet requirements
+- are edge cases handled
+
+Safety
+
+- could changes introduce regressions
+- are interfaces preserved
+
+Maintainability
+
+- readability
+- complexity
+- duplication
+
+Security
+
+- exposed secrets
+- unsafe operations
+
+
+
+---
+
+# CI Investigation Workflow
+
+When CI pipelines fail:
+
+1. inspect workflow configuration
+2. identify failing stage
+3. inspect related logs
+4. locate root cause
+5. implement minimal correction
+
+Avoid large workflow rewrites unless necessary.
+
+
+
+---
+
+# Infrastructure Troubleshooting Workflow
+
+When infrastructure configuration fails:
+
+1. inspect configuration files
+2. validate resource definitions
+3. inspect deployment logs
+4. identify root cause
+5. implement minimal fix
+
+Focus on:
+
+- Kubernetes manifests
+- deployment configuration
+- infrastructure automation
+
+
+
+---
+
+# E2E Testing Workflow
+
+When generating E2E tests:
+
+- follow existing testing framework
+- reuse current test patterns
+- avoid redundant tests
+- prioritize stable assertions
+
+Prefer deterministic tests over fragile UI checks.
+
+
+
+---
+
+# Regression Safety Strategy
+
+When modifying code consider:
+
+- dependent modules
+- integration points
+- interface compatibility
+- existing tests
+
+Add tests when modifying critical logic.
+
 
 
 ---
@@ -51,70 +361,76 @@ Comments should explain **why**, not repeat **what** the code already states.
 
 Prefer:
 
-- explicit logic over clever shortcuts
-- small functions with clear responsibilities
+- explicit logic
+- small functions
 - readable control flow
+- consistent naming
 - stable interfaces
 
 Avoid:
 
 - deep nesting
 - hidden side effects
-- unnecessary abstractions
 - duplicated logic
-- magic numbers without explanation
+- unexplained magic numbers
 
-Never hardcode:
 
-- credentials
-- tokens
-- API keys
-- internal service endpoints
-- environment-specific values
 
-Use configuration or environment variables instead.
+---
+
+# Temporary Artifact Policy
+
+Temporary artifacts may be created for:
+
+- debugging
+- validation
+- investigation
+
+Rules:
+
+1. artifacts must be clearly marked
+2. artifacts must not be committed
+3. artifacts must be removed before completion
+
+Recommended naming:
+
+__tmp_<purpose>.py  
+__tmp_<purpose>.sh  
+__tmp_<purpose>.js
+
 
 
 ---
 
 # Repository Integrity
 
-Respect the integrity of the repository.
+Respect repository structure.
 
 Avoid:
 
 - modifying unrelated files
-- restructuring directories without need
+- restructuring directories without request
 - introducing dependencies without justification
-- rewriting large modules without request
+- rewriting large modules unnecessarily
 
-Changes should remain tightly scoped to the requested task.
-
-If a broader refactor seems beneficial, propose it separately.
 
 
 ---
 
-# Artifact Hygiene
+# Safe Refactor Protocol
 
-AI-generated artifacts must not pollute the repository.
+Refactoring should only occur when:
 
-Examples of unnecessary artifacts:
+- it supports the requested task
+- it improves maintainability without changing behavior
 
-- debug scripts
-- temporary utilities
-- scratch notes
-- generated scaffolding not used by the project
-- duplicate documentation
-- temporary config files
+When refactoring:
 
-Before finalizing output:
+1. preserve behavior
+2. keep scope minimal
+3. verify compatibility
+4. ensure tests remain valid
 
-- remove temporary artifacts
-- avoid leaving experimental code fragments
-- keep the repository clean and intentional
-
-Only keep artifacts required for implementation or testing.
 
 
 ---
@@ -126,149 +442,58 @@ Never expose or generate:
 - API keys
 - tokens
 - credentials
-- internal service endpoints
+- internal endpoints
 - confidential identifiers
 
-When examples require sensitive fields use placeholders:
+Use placeholders instead:
 
-    API_KEY=your_api_key_here
-    DATABASE_URL=example_database_url
+API_KEY=your_api_key_here  
+DATABASE_URL=example_database_url  
+TOKEN=example_token
 
-Never suggest copying production data into local environments.
+Never suggest copying production data locally.
 
-Before interacting with external systems (GitHub, cloud APIs, etc.), confirm that modification is intended.
-
-
----
-
-# Hallucination Prevention
-
-Claude must avoid inventing behavior not supported by the repository.
-
-If information is missing:
-
-- inspect code first
-- search relevant files
-- acknowledge uncertainty if necessary
-
-Never fabricate:
-
-- API behavior
-- test results
-- build outcomes
-- repository structure
-
-When unsure, state the limitation explicitly.
-
-
----
-
-# Change Safety
-
-When modifying existing code:
-
-1. preserve existing behavior unless change is requested
-2. verify interface expectations
-3. check compatibility implications
-
-If a change may introduce risk clearly describe:
-
-- potential regressions
-- migration requirements
-- edge cases
-
-
----
-
-# Testing Expectations
-
-For bug fixes:
-
-- identify the root cause
-- ensure the fix addresses the root issue
-
-For significant changes:
-
-- update or add tests when testing infrastructure exists
-
-Never claim validation occurred unless it actually did.
-
-If tests or builds could not be executed clearly state that limitation.
 
 
 ---
 
 # Git Practices
 
-Changes should be review-friendly.
-
 Use Conventional Commit style:
 
-    feat(module): description
-    fix(module): description
-    refactor(module): description
-    docs(module): description
-    test(module): description
+feat(module): description  
+fix(module): description  
+refactor(module): description  
+docs(module): description  
+test(module): description
 
 Commits should:
 
-- address a single logical purpose
+- represent a single logical change
 - remain easy to review
-- avoid mixing unrelated changes
 
-
----
-
-# Self Validation Checklist
-
-Before producing final output verify:
-
-1. the solution satisfies the requested task
-2. no unrelated files were modified
-3. comments follow the English rule
-4. no secrets appear in code or examples
-5. unnecessary artifacts are removed
-6. change scope remains minimal
-7. reasoning matches repository structure
-
-Correct issues before finalizing.
 
 
 ---
 
 # Response Structure
 
-Engineering responses should follow this structure:
+Engineering responses should follow:
 
-1. Understanding  
-2. Plan (if needed)  
-3. Changes  
-4. Validation  
-5. Risks or Follow-ups  
+1. Understanding
+2. Plan
+3. Changes
+4. Validation
+5. Cleanup
+6. Risks or Follow-ups
 
-This improves clarity and reviewability.
-
-
----
-
-# Anti-Patterns
-
-Avoid producing outputs that:
-
-- mix refactoring with feature work without explanation
-- introduce hidden behavior changes
-- fabricate test results
-- expose sensitive data
-- leave temporary artifacts in the repository
-
-Prefer clarity over speed.
 
 
 ---
 
 # Guiding Principle
 
-Claude should act as a careful engineer working inside a shared codebase.
+Claude should act as a responsible engineer working inside a shared codebase.
 
 Optimize for:
 
